@@ -31,7 +31,7 @@
                 <h1>{{ property.title }}</h1>
                 <h2>{{ property.rooms }} pièces - {{ property.surface }} m²</h2>
                 <div class="text-primary" style="font-size: 4rem;font-weight: bold;">{{ property.formattedPrice }} €</div>
-                <a href="#" class="btn btn-primary">Contacter l'agence</a>
+                <button onclick="showOnClick()" class="btn btn-primary">Contacter l'agence</button>
                 <div id="contactForm" class="mt-4">
                     {{ form_start(form) }}
                     <div class="row">
@@ -94,4 +94,17 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById("contactForm").style.display = "none";
+
+function showOnClick() {
+  var divToShow = document.getElementById("contactForm");
+  if (divToShow.style.display === "none") {
+    divToShow.style.display = "block";
+  } else {
+    divToShow.style.display = "none";
+  }
+}
+</script>
 {% endblock %}

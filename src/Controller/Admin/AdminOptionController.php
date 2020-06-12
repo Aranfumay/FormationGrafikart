@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Option;
 use App\Form\OptionType;
 use App\Repository\OptionRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,18 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class AdminOptionController extends AbstractController
 {
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    public function __construct (EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+
+
     /**
      * @Route("/", name="admin.option.index", methods={"GET"})
      */
@@ -22,6 +35,7 @@ class AdminOptionController extends AbstractController
     {
         return $this->render('admin/option/index.html.twig', [
             'options' => $optionRepository->findAll(),
+            'current_menu' => 'admin_options'
         ]);
     }
 
@@ -44,7 +58,8 @@ class AdminOptionController extends AbstractController
 
         return $this->render('admin/option/new.html.twig', [
             'option' => $option,
-            'form' => $form->createView(),
+            'current_menu' => 'admin_options',
+            'form' => $form->createView()
         ]);
     }
 
@@ -64,7 +79,8 @@ class AdminOptionController extends AbstractController
 
         return $this->render('admin/option/edit.html.twig', [
             'option' => $option,
-            'form' => $form->createView(),
+            'current_menu' => 'admin_options',
+            'form' => $form->createView()
         ]);
     }
 
@@ -73,12 +89,11 @@ class AdminOptionController extends AbstractController
      */
     public function delete(Request $request, Option $option): Response
     {
-        if ($this->isCsrfTokenValid('admin/delete'.$option->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($option);
-            $entityManager->flush();
+        if ($this->isCsrfTokenValid('delete' . $option->getId(), $request->request->get('_token'))) {
+            $this->em->remove($option);
+            $this->em->flush();
+            $this->addFlash('success','Option supprimée avec succès');
         }
-
         return $this->redirectToRoute('admin.option.index');
     }
 }
